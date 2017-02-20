@@ -5,10 +5,14 @@
  */
 package com.example.associations.nosaveupdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -20,10 +24,12 @@ public class StockDailyRecord implements java.io.Serializable {
 
     @Id
     @Column(name = "ID")
-    private Integer recordId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long recordId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "STOCK_ID")
+    @JsonIgnore
     private Stock stock;
 
     private Float priceOpen;
