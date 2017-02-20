@@ -28,7 +28,7 @@ import lombok.Data;
  *
  * @author msol-pc
  */
-@Entity
+@Entity(name = "T_UPDATE")
 @Data
 public class Update {
 

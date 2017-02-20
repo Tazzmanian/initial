@@ -15,7 +15,13 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepo;
 
-    public User save(User user) {
+    public User saveUser(User user) {
+        user.setRole(roleRepo.findByName("USER"));
+        return repo.save(user);
+    }
+
+    public User saveAdmin(User user) {
+        user.setRole(roleRepo.findByName("ADMIN"));
         return repo.save(user);
     }
 
@@ -36,7 +42,7 @@ public class UserService {
     }
 
     public User remove(Long id) throws Exception {
-        User user = repo.findOne(id);
+        User user = repo.findByUserId(id); // for some reason findOne doesn't work (user == null)
         if (user == null) {
             throw new Exception("User not found");
         }
@@ -45,7 +51,7 @@ public class UserService {
     }
 
     public User update(Long id, User user) throws Exception {
-        User dbUser = repo.findOne(id);
+        User dbUser = repo.findByUserId(id);
         if (user == null) {
             throw new Exception("User not found");
         }

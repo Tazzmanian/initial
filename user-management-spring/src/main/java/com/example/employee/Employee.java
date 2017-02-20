@@ -58,7 +58,7 @@ public class Employee implements Serializable {
     private BigDecimal bonus;
     private BigDecimal commission;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
     private User user;
 
@@ -70,7 +70,7 @@ public class Employee implements Serializable {
     @JsonIgnore
     private Employer employer;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "EMPLOYEE_TASKS", joinColumns = {
         @JoinColumn(name = "EMPLOYEE_ID")},
             inverseJoinColumns = {
@@ -83,37 +83,5 @@ public class Employee implements Serializable {
 
     public Employer getEmployer() {
         return employer;
-    }
-
-    public String getFirstName() {
-        return user.getFirstName();
-    }
-
-    public void setFirstName(String firstName) {
-        user.setFirstName(firstName);
-    }
-
-    public String getLastName() {
-        return user.getLastName();
-    }
-
-    public void setLastName(String lastName) {
-        user.setLastName(lastName);
-    }
-
-    public String getPhoneNumber() {
-        return user.getPhoneNumber();
-    }
-
-    public void setPhoneNumber(String number) {
-        user.setPhoneNumber(number);
-    }
-
-    public Date getDob() {
-        return user.getBirthDate();
-    }
-
-    public void setDob(Date date) {
-        user.setBirthDate(date);
     }
 }
