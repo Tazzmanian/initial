@@ -52,4 +52,8 @@ public class TaskService {
         dbTask.setLastUpdated(employee);
         return TaskMapper.mapEntityIntoDTO(repo.save(dbTask));
     }
+
+    public List<Task> getAllTasks() {
+        return repo.findAll();
+    }
 }
