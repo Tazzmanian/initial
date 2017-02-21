@@ -10,7 +10,6 @@ import com.example.task.Task;
 import com.example.task.Update;
 import com.example.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -75,7 +74,7 @@ public class Employee implements Serializable {
         @JoinColumn(name = "EMPLOYEE_ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "TASK_ID")})
-    @JsonManagedReference
+    @JsonIgnore
     private List<Task> tasks;
 
     @OneToMany(mappedBy = "updater", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -85,4 +84,35 @@ public class Employee implements Serializable {
         return employer;
     }
 
+    public String getFirstName() {
+        return user.getFirstName();
+    }
+
+    public void setFirstName(String firstName) {
+        user.setFirstName(firstName);
+    }
+
+    public String getLastName() {
+        return user.getLastName();
+    }
+
+    public void setLastName(String lastName) {
+        user.setLastName(lastName);
+    }
+
+    public String getPhoneNumber() {
+        return user.getPhoneNumber();
+    }
+
+    public void setPhoneNumber(String number) {
+        user.setPhoneNumber(number);
+    }
+
+    public Date getDob() {
+        return user.getBirthDate();
+    }
+
+    public void setDob(Date date) {
+        user.setBirthDate(date);
+    }
 }

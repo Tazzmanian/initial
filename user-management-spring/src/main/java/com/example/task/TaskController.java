@@ -6,6 +6,7 @@
 package com.example.task;
 
 import com.example.employee.Employee;
+import com.example.employee.EmployeeRepository;
 import com.example.employee.EmployeeService;
 import com.example.employer.Employer;
 import com.example.employer.EmployerService;
@@ -40,6 +41,9 @@ public class TaskController {
     @Autowired
     private EmployeeService employeeService;
 
+    @Autowired
+    private EmployeeRepository employeeRepo;
+
     @RequestMapping(value = "/tasks", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public Task createTask(@RequestBody Task task, @AuthenticationPrincipal User user) throws Exception {
@@ -50,7 +54,7 @@ public class TaskController {
                 throw new Exception("This employer cannot give a task to employee No: " + employee.getEmployeeNumber());
             }
         }
-        return service.createTask(task);
+        return service.createTask(task, employer);
     }
 
     @PreAuthorize("this.isAssignee(principal.username, #id)")
@@ -68,10 +72,19 @@ public class TaskController {
         return service.getEmployeesTasks(employees, pageRequest).getContent();
     }
 
+    @RequestMapping(value = "/tasks/test", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Task> getAllTasks() {
+        return service.getAllTasks();
+    }
+
     public boolean isOwner(Employer employer, Employee employee) {
-        if ((employer.getEmployees().contains(employee))) {
-            return true;
+
+        for (Employee empl : employer.getEmployees()) {
+            if (empl.getUser().getUserId() == (employee.getUser().getUserId())) {
+                return true;
+            }
         }
+
         return false;
     }
 

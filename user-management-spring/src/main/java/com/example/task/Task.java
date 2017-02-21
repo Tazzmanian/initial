@@ -8,7 +8,6 @@ package com.example.task;
 import com.example.employee.Employee;
 import com.example.employer.Employer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.Date;
@@ -54,13 +53,13 @@ public class Task implements Serializable {
     @JsonBackReference
     private Employee lastUpdated;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "EMPLOYEE_TASKS", joinColumns = {
         @JoinColumn(name = "TASK_ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "EMPLOYEE_ID")}
     )
-    @JsonIgnore
+    //@JsonIgnore
     private List<Employee> assignees;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
