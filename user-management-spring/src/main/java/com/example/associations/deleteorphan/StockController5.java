@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.example.associations.nocascadedeleteorphan;
+package com.example.associations.deleteorphan;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.example.associations.nocascadedeleteorphan;
+package com.example.associations.deleteorphan;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
