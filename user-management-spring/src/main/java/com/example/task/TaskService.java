@@ -31,8 +31,8 @@ public class TaskService {
         List<Employee> temps = new ArrayList<>();
 
         for (Employee empl : task.getAssignees()) {
-            Long id = empl.getUser().getUserId();
-            Employee temp = employeeRepo.findByUserUserId(id);
+            Long id = empl.getId();
+            Employee temp = employeeRepo.findById(id);
             User user = temp.getUser();
             temp.setFirstName(user.getFirstName());
             temp.setLastName(user.getLastName());

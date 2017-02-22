@@ -80,7 +80,7 @@ public class TaskController {
     public boolean isOwner(Employer employer, Employee employee) {
 
         for (Employee empl : employer.getEmployees()) {
-            if (empl.getUser().getUserId() == (employee.getUser().getUserId())) {
+            if (empl.getId() == employee.getId()) {
                 return true;
             }
         }
