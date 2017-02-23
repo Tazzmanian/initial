@@ -5,8 +5,9 @@
  */
 package com.example.employer;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,16 +20,24 @@ public class EmployerService {
     @Autowired
     private EmployerRepository repo;
 
-    public Employer save(Employer empl) {
-        return repo.save(empl);
+    public EmployerDTO save(Employer empl) {
+        return EmployerMapper.mapEntityIntoDTO(repo.save(empl));
     }
 
-    public List<Employer> getAllEmployers() {
-        return repo.findAll();
+    public Page<EmployerDTO> getAllEmployers(Pageable pageRequest) {
+        Page<Employer> employers = repo.findAll(pageRequest);
+        return EmployerMapper.mapEntityPageIntoDTOPage(pageRequest, employers);
     }
 
     public Employer getByUsername(String username) {
         return repo.findByUserUserName(username);
+    }
+
+    public Employer changeActive(Long id) {
+        Employer empl = repo.findOne(id);
+        empl.getUser().setEnabled(!empl.getUser().isEnabled());
+        repo.save(empl);
+        return empl;
     }
 
 }

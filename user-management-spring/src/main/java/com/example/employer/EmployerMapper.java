@@ -7,21 +7,29 @@ package com.example.employer;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 public class EmployerMapper {
 
-    public static List<EmployerDTOAdmin> mapEntitiesIntoDTOs(List<Employer> employers) {
+    public static List<EmployerDTO> mapEntitiesIntoDTOs(List<Employer> employers) {
         return employers.stream()
                 .map(EmployerMapper::mapEntityIntoDTO)
                 .collect(Collectors.toList());
     }
 
-    public static EmployerDTOAdmin mapEntityIntoDTO(Employer employer) {
+    public static EmployerDTO mapEntityIntoDTO(Employer employer) {
 
-        EmployerDTOAdmin dto = new EmployerDTOAdmin();
+        EmployerDTO dto = new EmployerDTO();
         dto.setId(employer.getId());
-        dto.setEmployes(employer.getEmployees());
+        dto.setEmployees(employer.getEmployees());
         return dto;
+    }
+
+    public static Page<EmployerDTO> mapEntityPageIntoDTOPage(Pageable page, Page<Employer> source) {
+        List<EmployerDTO> dtos = mapEntitiesIntoDTOs(source.getContent());
+        return new PageImpl<>(dtos, page, source.getTotalElements());
     }
 
 }

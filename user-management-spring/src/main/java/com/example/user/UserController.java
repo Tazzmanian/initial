@@ -35,10 +35,17 @@ public class UserController {
     private UserDetailsService userDetailsService;
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @RequestMapping(value = "/users", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/users/privileged", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public User save(@RequestBody User user) {
-        return service.save(user);
+    public User saveAdmin(@RequestBody User user) {
+        return service.saveAdmin(user);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @RequestMapping(value = "/users/normal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public User saveUser(@RequestBody User user) {
+        return service.saveUser(user);
     }
 
     @RequestMapping(value = "/users/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +53,6 @@ public class UserController {
     public ResponseEntity create(@RequestBody User user) throws UnsupportedEncodingException {
 
         String token = userTokenUtil.generateToken(user);
-        System.out.println(user.getFirstName());
         service.save(user, token);
 
         if (!userTokenUtil.validateToken(token, user)) {
@@ -102,10 +108,10 @@ public class UserController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @RequestMapping(value = "/users/change/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/users/active/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public User changeUserFlag(@PathVariable String name) {
-        return service.changeFlag(name);
+    public User activate(@PathVariable Long id) {
+        return service.changeActive(id);
     }
 
     @RequestMapping(value = "users/authorization", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -123,7 +129,6 @@ public class UserController {
     @RequestMapping(value = "users/authorization/{token}/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO enableUser(@PathVariable String token) {
         String username = userTokenUtil.getUsernameFromToken(token);
-        System.out.println("USERNAME FROM TOKEN " + username);
         User user = (User) userDetailsService.loadUserByUsername(username);
         if (user != null) {
             user.setEnabled(true);

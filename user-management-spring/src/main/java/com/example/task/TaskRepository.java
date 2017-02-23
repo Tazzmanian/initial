@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.example.employee;
+package com.example.task;
 
+import com.example.employee.Employee;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,14 +14,13 @@ import org.springframework.stereotype.Repository;
 
 /**
  *
- * @author msol-pc
+ * @author Teodor Todorov
  */
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    public Page<Employee> findByEmployerUserUserName(String employerName, Pageable pageRequest);
+    public Page<Task> findByAssigneesId(Long id, Pageable pageRequest);
 
-    public Employee findByUserUserName(String userName);
+    public Page<Task> findByAssigneesIn(List<Employee> employees, Pageable pageRequest);
 
-    public Employee findByTasksUpdatesUpdaterId(Long id);
 }

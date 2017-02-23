@@ -3,15 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.example.employer;
+package com.example.task;
 
-import com.example.employee.Employee;
+import java.util.Date;
 import java.util.List;
 import lombok.Data;
 
+/**
+ *
+ * @author msol-pc
+ */
 @Data
-public class EmployerDTOAdmin {
+public class TaskDTO {
 
-    private Long id;
-    private List<Employee> employes;
+    private String title;
+    private Date created;
+    private List<Update> updates;
+
 }

@@ -5,8 +5,13 @@
  */
 package com.example.employee;
 
+import com.example.user.User;
+import com.example.user.UserRepository;
+import com.example.user.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,7 +24,21 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository repo;
 
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private UserService userService;
+
     public Employee save(Employee empl) {
+        User user = empl.getUser();
+        userService.saveUser(user);
+
+        user.setBirthDate(empl.getDob());
+        user.setFirstName(empl.getFirstName());
+        user.setLastName(empl.getLastName());
+        user.setPhoneNumber(empl.getPhoneNumber());
+
         return repo.save(empl);
     }
 
@@ -31,8 +50,17 @@ public class EmployeeService {
         return repo.findAll();
     }
 
-    public List<Employee> getEmployeesByEmployer(String employerName) {
-        return repo.findByEmployerUserUserName(employerName);
+    public Employee getByUsername(String username) {
+        return repo.findByUserUserName(username);
+    }
+
+    public Page<EmployeeDTO> getAllEmployees(Pageable pageRequest) {
+        Page<Employee> resultPage = repo.findAll(pageRequest);
+        return EmployeeMapper.mapEntityPageIntoDTOPage(pageRequest, resultPage);
+    }
+
+    public Page<Employee> getEmployeesByEmployer(String employerName, Pageable pageRequest) {
+        return repo.findByEmployerUserUserName(employerName, pageRequest);
     }
 
     public Employee update(Long id, Employee empl) throws Exception {
@@ -48,9 +76,30 @@ public class EmployeeService {
         return repo.save(dbEmpl);
     }
 
-    public EmployeeDTO getEmployeeByUserName(String userName) {
+    public EmployeeDTO getEmployeeDTOByUserName(String userName) {
+        User user = userRepo.findByUserName(userName);
         Employee empl = repo.findByUserUserName(userName);
-        return EmployeeMapper.mapEntityIntoDTO(empl);
+
+        // null fields for embeded data
+        if (empl.getDob() == null) {
+            empl.setDob(user.getBirthDate());
+        }
+        if (empl.getFirstName() == null) {
+            empl.setFirstName(user.getFirstName());
+        }
+        if (empl.getLastName() == null) {
+            empl.setLastName(user.getLastName());
+        }
+        if (empl.getPhoneNumber() == null) {
+            empl.setPhoneNumber(user.getPhoneNumber());
+        }
+
+        return EmployeeMapper.mapEntityIntoDTO(repo.save(empl));
+    }
+
+    public List<EmployeeTaskDTO> getAllTasked() {
+        List<Employee> employees = repo.findAll();
+        return EmployeeTaskMapper.mapEntitiesIntoDTOs(employees);
     }
 
     public EmployeeDTO update(String userName, EmployeeDTO employee) throws Exception {
@@ -67,7 +116,14 @@ public class EmployeeService {
         empl.setPhoneNumber(employee.getPhoneNumber());
 
         repo.save(empl);
-        return getEmployeeByUserName(userName);
+        return getEmployeeDTOByUserName(userName);
+    }
+
+    public Employee changeActive(Long id) {
+        Employee empl = repo.findOne(id);
+        empl.getUser().setEnabled(!empl.getUser().isEnabled());
+        repo.save(empl);
+        return empl;
     }
 
 }

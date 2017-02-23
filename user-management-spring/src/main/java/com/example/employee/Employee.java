@@ -6,11 +6,15 @@
 package com.example.employee;
 
 import com.example.employer.Employer;
+import com.example.task.Task;
+import com.example.task.Update;
 import com.example.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +24,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.Data;
 
@@ -52,7 +58,7 @@ public class Employee implements Serializable {
     private BigDecimal bonus;
     private BigDecimal commission;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
     private User user;
 
@@ -64,39 +70,18 @@ public class Employee implements Serializable {
     @JsonIgnore
     private Employer employer;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "EMPLOYEE_TASKS", joinColumns = {
+        @JoinColumn(name = "EMPLOYEE_ID")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "TASK_ID")})
+    @JsonManagedReference
+    private List<Task> tasks;
+
+    @OneToMany(mappedBy = "updater", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Update> updates;
+
     public Employer getEmployer() {
         return employer;
-    }
-
-    public String getFirstName() {
-        return user.getFirstName();
-    }
-
-    public void setFirstName(String firstName) {
-        user.setFirstName(firstName);
-    }
-
-    public String getLastName() {
-        return user.getLastName();
-    }
-
-    public void setLastName(String lastName) {
-        user.setLastName(lastName);
-    }
-
-    public String getPhoneNumber() {
-        return user.getPhoneNumber();
-    }
-
-    public void setPhoneNumber(String number) {
-        user.setPhoneNumber(number);
-    }
-
-    public Date getDob() {
-        return user.getBirthDate();
-    }
-
-    public void setDob(Date date) {
-        user.setBirthDate(date);
     }
 }

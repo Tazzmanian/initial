@@ -36,11 +36,11 @@ public class Employer implements Serializable {
     @Column(name = "EMPLOYER_ID")
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @OneToMany(mappedBy = "employer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Employee> employees;
 
 }
