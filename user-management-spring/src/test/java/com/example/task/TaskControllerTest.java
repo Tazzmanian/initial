@@ -118,7 +118,7 @@ public class TaskControllerTest extends AbstractTestRunner {
 
     @Test
     @WithUserDetails("billy")
-    public void createTaskByEmployer_negative() throws Exception {
+    public void createTaskByEmployer_positive() throws Exception {
         String requestBody = "{\n"
                 + "	\"title\": \"LULW123123\",\n"
                 + "  	\"assignees\": [\n"
@@ -143,6 +143,40 @@ public class TaskControllerTest extends AbstractTestRunner {
         JSONObject assignee = assigneesArr.getJSONObject(0);
         Long actualAssigneeId = assignee.getLong("id");
         Assert.assertEquals("Ids are not equal", expectedEmployeeId, actualAssigneeId);
+    }
+
+    @Test
+    @WithUserDetails("billy")
+    public void createTaskByEmployer_negative() throws Exception {
+        String requestBody = "{\n"
+                + "	\"title\": \"LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123LULW123123\",\n"
+                + "  	\"assignees\": [\n"
+                + "            {\n"
+                + "              \"id\": 1\n"
+                + "          	}\n"
+                + "        ]\n"
+                + "}";
+
+        resultSet = perform(MockMvcRequestBuilders.post("/tasks").contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    @WithUserDetails("mark")
+    public void createTaskByEmployee() throws Exception {
+        String requestBody = "{\n"
+                + "	\"title\": \"LULW123123\",\n"
+                + "  	\"assignees\": [\n"
+                + "            {\n"
+                + "              \"id\": 1\n"
+                + "          	}\n"
+                + "        ]\n"
+                + "}";
+
+        resultSet = perform(MockMvcRequestBuilders.post("/tasks").contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
 }
