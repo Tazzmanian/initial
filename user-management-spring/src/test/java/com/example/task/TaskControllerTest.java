@@ -44,7 +44,7 @@ public class TaskControllerTest extends AbstractTestRunner {
 
     @Test
     @WithUserDetails("billy")
-    public void accessTasksByEmployer_positive() throws Exception, JSONException {
+    public void accessTasksByEmployer() throws Exception, JSONException {
 
         resultSet = perform(MockMvcRequestBuilders.get("/tasks").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
@@ -69,7 +69,7 @@ public class TaskControllerTest extends AbstractTestRunner {
 
     @Test
     @WithUserDetails("mark")
-    public void updateTaskByCurrentEmployee_positive() throws Exception {
+    public void updateTaskByCurrentEmployee() throws Exception {
 
         String requestBody = "{\n"
                 + "  \"body\":\"some text\"\n"
@@ -118,7 +118,7 @@ public class TaskControllerTest extends AbstractTestRunner {
 
     @Test
     @WithUserDetails("billy")
-    public void createTaskByEmployer_positive() throws Exception {
+    public void createTaskByEmployer() throws Exception {
         String requestBody = "{\n"
                 + "	\"title\": \"LULW123123\",\n"
                 + "  	\"assignees\": [\n"
