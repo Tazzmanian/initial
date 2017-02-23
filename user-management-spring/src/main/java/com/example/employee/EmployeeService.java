@@ -73,6 +73,8 @@ public class EmployeeService {
         dbEmpl.setSalary(empl.getSalary());
         dbEmpl.setBonus(empl.getBonus());
         dbEmpl.setCommission(empl.getCommission());
+        dbEmpl.setDob(empl.getDob());
+
         return repo.save(dbEmpl);
     }
 

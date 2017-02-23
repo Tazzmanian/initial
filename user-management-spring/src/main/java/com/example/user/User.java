@@ -68,6 +68,9 @@ public class User implements Serializable, UserDetails {
     }
 
     public Collection<Privilege> getPrivileges() {
+        if (role == null) {
+            return null;
+        }
         return role.getPrivileges();
     }
 

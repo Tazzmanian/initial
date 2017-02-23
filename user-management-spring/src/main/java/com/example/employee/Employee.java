@@ -75,7 +75,7 @@ public class Employee implements Serializable {
         @JoinColumn(name = "EMPLOYEE_ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "TASK_ID")})
-    @JsonManagedReference
+    @JsonIgnore
     private List<Task> tasks;
 
     @OneToMany(mappedBy = "updater", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
