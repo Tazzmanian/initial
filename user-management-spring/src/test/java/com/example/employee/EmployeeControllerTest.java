@@ -198,11 +198,12 @@ public class EmployeeControllerTest extends AbstractTestRunner {
                 + "    \"sex\": \"m\"\n"
                 + "}";
 
-        resultSet = perform(MockMvcRequestBuilders.post("/employees").contentType(MediaType.APPLICATION_JSON)
+        resultSet = perform(MockMvcRequestBuilders.put("/employees").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        String expectedResponse = "{\"employeeNumber\":null,\"firstName\":\"markVI\",\"middleName\":\"test1\",\"lastName\":\"ericsonVI\",\"workDeptId\":null,\"phoneNumber\":\"123\",\"hireDate\":null,\"job\":null,\"educationLvl\":null,\"sex\":\"m\",\"dob\":null,\"salary\":null,\"bonus\":null,\"commission\":null,\"user\":{\"password\":null,\"firstName\":\"markVI\",\"lastName\":\"ericsonVI\",\"birthDate\":null,\"phoneNumber\":\"123\",\"email\":null,\"enabled\":false,\"role\":null,\"username\":null,\"accountNonLocked\":true,\"accountNonExpired\":true,\"credentialsNonExpired\":true,\"privileges\":null},\"updates\":null}";
+        String expectedResponse = "{\"firstName\":\"markVI\",\"middleName\":\"test1\",\"lastName\":\"ericsonVI\",\"phoneNumber\":\"123\",\"sex\":\"m\",\"dob\":null}";
+
         String actualResponse = new JSONObject(resultSet.getContentAsString()).toString();
 
         System.out.println(actualResponse);
