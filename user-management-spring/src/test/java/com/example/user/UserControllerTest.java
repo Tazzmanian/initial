@@ -260,9 +260,9 @@ public class UserControllerTest extends AbstractTestRunner {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
         String actualResponse = new JSONObject(resultSet.getContentAsString()).toString();
-        String expectedResponse = "{\"userId\":12,\"password\":\"artist\",\"firstName\":\"van\",\"lastName\":\"hellsing\",\"birthDate\":null,\"phoneNumber\":null,\"email\":null,\"enabled\":false,\"role\":{\"id\":1,\"name\":\"ADMIN\",\"privileges\":[{\"authority\":\"ADMIN\"},{\"authority\":\"PERM_VIEW_USER\"},{\"authority\":\"PERM_DELETE_USER\"},{\"authority\":\"PERM_EDIT_USER\"},{\"authority\":\"PERM_CHANGE_ACTIVE_USER\"},{\"authority\":\"PERM_VIEW_USERFLAG\"}]},\"username\":\"van\",\"credentialsNonExpired\":true,\"accountNonLocked\":true,\"accountNonExpired\":true,\"privileges\":[{\"authority\":\"ADMIN\"},{\"authority\":\"PERM_VIEW_USER\"},{\"authority\":\"PERM_DELETE_USER\"},{\"authority\":\"PERM_EDIT_USER\"},{\"authority\":\"PERM_CHANGE_ACTIVE_USER\"},{\"authority\":\"PERM_VIEW_USERFLAG\"}]}";
+        String expectedResponse = "{\"password\":\"artist\",\"firstName\":\"van\",\"lastName\":\"hellsing\",\"birthDate\":null,\"phoneNumber\":null,\"email\":null,\"enabled\":false,\"role\":{\"id\":1,\"name\":\"ADMIN\",\"privileges\":[{\"authority\":\"ADMIN\"},{\"authority\":\"PERM_VIEW_USER\"},{\"authority\":\"PERM_DELETE_USER\"},{\"authority\":\"PERM_EDIT_USER\"},{\"authority\":\"PERM_CHANGE_ACTIVE_USER\"},{\"authority\":\"PERM_VIEW_USERFLAG\"}]},\"username\":\"van\",\"credentialsNonExpired\":true,\"accountNonLocked\":true,\"accountNonExpired\":true,\"privileges\":[{\"authority\":\"ADMIN\"},{\"authority\":\"PERM_VIEW_USER\"},{\"authority\":\"PERM_DELETE_USER\"},{\"authority\":\"PERM_EDIT_USER\"},{\"authority\":\"PERM_CHANGE_ACTIVE_USER\"},{\"authority\":\"PERM_VIEW_USERFLAG\"}]}";
 
-        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.STRICT);
+        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
     }
 
     @Test
@@ -299,9 +299,9 @@ public class UserControllerTest extends AbstractTestRunner {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
         String actualResponse = new JSONObject(resultSet.getContentAsString()).toString();
-        String expectedResponse = "{\"userId\":12,\"password\":\"artist\",\"firstName\":\"van\",\"lastName\":\"hellsing\",\"birthDate\":null,\"phoneNumber\":null,\"email\":null,\"enabled\":false,\"role\":{\"id\":2,\"name\":\"USER\",\"privileges\":[{\"authority\":\"PERM_VIEW_USER\"}]},\"username\":\"van\",\"privileges\":[{\"authority\":\"PERM_VIEW_USER\"}],\"credentialsNonExpired\":true,\"accountNonExpired\":true,\"accountNonLocked\":true}";
+        String expectedResponse = "{\"password\":\"artist\",\"firstName\":\"van\",\"lastName\":\"hellsing\",\"birthDate\":null,\"phoneNumber\":null,\"email\":null,\"enabled\":false,\"role\":{\"id\":2,\"name\":\"USER\",\"privileges\":[{\"authority\":\"PERM_VIEW_USER\"}]},\"username\":\"van\",\"privileges\":[{\"authority\":\"PERM_VIEW_USER\"}],\"credentialsNonExpired\":true,\"accountNonExpired\":true,\"accountNonLocked\":true}";
 
-        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.STRICT);
+        JSONAssert.assertEquals(expectedResponse, actualResponse, JSONCompareMode.LENIENT);
     }
 
     @Test
@@ -351,7 +351,7 @@ public class UserControllerTest extends AbstractTestRunner {
 
         //it pass with name 1000 character long 
         String requestBody = "{\n"
-                + "	\"userName\": \"van\",\n"
+                + "	\"userName\": \"vanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvanvvanvvanvvanvvavanvvavanvvava\",\n"
                 + "	\"password\": \"artist\",\n"
                 + "	\"firstName\": \"van\",\n"
                 + "	\"lastName\": \"hellsing\",\n"
