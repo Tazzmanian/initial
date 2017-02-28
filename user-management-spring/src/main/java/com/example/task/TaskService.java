@@ -13,9 +13,11 @@ import com.example.employee.EmployeeService;
 import com.example.employer.Employer;
 import com.example.employer.EmployerRepository;
 import com.example.user.User;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +34,9 @@ public class TaskService {
 
     @Autowired
     private EmployeeRepository employeeRepo;
+
+    @Autowired
+    private UpdateRepository updateRepo;
 
     public Task createTask(Task task) {
         return repo.save(task);
@@ -87,8 +92,7 @@ public class TaskService {
         return task;
     }
 
-    public List<EmployeeDTO> showAssigneesOnTaskByEmployer(Long taskId, Long employerId) {
-
+    private List<Employee> showAssigneesOnTaskByEmployerHelper(Long taskId, Long employerId) {
         Employer employer = employerRepo.findOne(employerId);
 
 //        employer.getEmployees().stream().forEach((employee) -> {
@@ -109,7 +113,11 @@ public class TaskService {
             });
         });
 
-        return EmployeeMapper.mapEntitiesIntoDTOs(employeeList);
+        return employeeList;
+    }
+
+    public List<EmployeeDTO> showAssigneesOnTaskByEmployer(Long taskId, Long employerId) {
+        return EmployeeMapper.mapEntitiesIntoDTOs(showAssigneesOnTaskByEmployerHelper(taskId, employerId));
     }
 
     private void fillEmployee(Employee empl) {
@@ -129,5 +137,18 @@ public class TaskService {
         }
 
         employeeRepo.save(empl);
+    }
+
+    public List<Update> showTasksUpdatesByEmployer(Long taskId, Long employerId) {
+
+        List<Employee> employees = showAssigneesOnTaskByEmployerHelper(taskId, employerId);
+
+        List<List<Update>> list = employees.stream().map(Employee::getUpdates).collect(Collectors.toList());
+
+        List<Update> flattenList = list.stream().flatMap(List::stream).collect(Collectors.toList());
+
+        List<Update> filteredList = flattenList.stream().filter(x -> taskId.equals(x.getTask().getId())).collect(Collectors.toList());
+
+        return filteredList;
     }
 }

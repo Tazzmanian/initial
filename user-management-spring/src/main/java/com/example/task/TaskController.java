@@ -78,10 +78,17 @@ public class TaskController {
     }
 
     //- добавяш показване само на assignees (input task id, employer id) 
-    @RequestMapping(value = "/tasks/{taskId}/{employerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/tasks/assignees/{taskId}/{employerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public List<EmployeeDTO> showAssigneesOnTaskByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
         return service.showAssigneesOnTaskByEmployer(taskId, employerId);
+    }
+
+    // - добавяш показване само на updates (input task id, employer id)
+    @RequestMapping(value = "/tasks/updates/{taskId}/{employerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<Update> showTasksUpdatesByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
+        return service.showTasksUpdatesByEmployer(taskId, employerId);
     }
 
     public boolean isOwner(Employer employer, Employee employee) {

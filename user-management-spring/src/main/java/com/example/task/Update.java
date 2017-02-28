@@ -8,6 +8,7 @@ package com.example.task;
 import com.example.employee.Employee;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +31,7 @@ import lombok.Data;
  */
 @Entity(name = "T_UPDATE")
 @Data
-public class Update {
+public class Update implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,20 +42,15 @@ public class Update {
     private Date timeUpdated;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "UPDATE_UPDATER", joinColumns = {
-        @JoinColumn(name = "UPDATER_ID")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "UPDATE_ID")})
+    @JoinColumn(name = "UPDATER_ID")
     @JsonIgnore
     private Employee updater;
 
+    @Column(name = "BODY")
     private String body;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "TASK_UPDATE", joinColumns = {
-        @JoinColumn(name = "TASK_ID")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "UPDATE_ID")})
+    @JoinColumn(name = "TASK_ID")
     @JsonBackReference
     private Task task;
 
