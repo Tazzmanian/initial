@@ -6,6 +6,7 @@
 package com.example.task;
 
 import com.example.employee.Employee;
+import com.example.employer.Employer;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,5 +52,24 @@ public class TaskService {
         dbTask.getUpdates().add(update);
         dbTask.setLastUpdated(employee);
         return TaskMapper.mapEntityIntoDTO(repo.save(dbTask));
+    }
+
+    public Task delete(String username, Long id) {
+
+        Task task = repo.findByAssignerUserUserNameAndId(username, id);
+
+        if (task == null) {
+            return task;
+        }
+
+        Task temp = task;
+        temp.setAssigner(null);
+        temp.setAssignees(null);
+
+        temp = repo.save(temp);
+
+        repo.delete(temp);
+
+        return task;
     }
 }

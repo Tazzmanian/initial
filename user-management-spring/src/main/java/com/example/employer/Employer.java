@@ -6,7 +6,9 @@
 package com.example.employer;
 
 import com.example.employee.Employee;
+import com.example.task.Task;
 import com.example.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -41,6 +43,11 @@ public class Employer implements Serializable {
     private User user;
 
     @OneToMany(mappedBy = "employer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Employee> employees;
+
+    @OneToMany(mappedBy = "assigner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Task> tasks;
 
 }

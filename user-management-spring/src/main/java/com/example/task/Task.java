@@ -63,12 +63,8 @@ public class Task implements Serializable {
     @JsonIgnore
     private List<Employee> assignees;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "EMPLOYER_TASKS", joinColumns = {
-        @JoinColumn(name = "TASK_ID")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "EMPLOYER_ID")}
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ASSIGNER_ID")
     private Employer assigner;
 
     @PrePersist

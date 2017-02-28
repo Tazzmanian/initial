@@ -68,6 +68,12 @@ public class TaskController {
         return service.getEmployeesTasks(employees, pageRequest).getContent();
     }
 
+    //- добавяш изтриване на task по id – само от employer и само негови таскове!
+    @RequestMapping(value = "/tasks/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Task deleteTask(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        return service.delete(user.getUsername(), id);
+    }
+
     public boolean isOwner(Employer employer, Employee employee) {
         if ((employer.getEmployees().contains(employee))) {
             return true;
