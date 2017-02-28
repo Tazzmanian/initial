@@ -50,7 +50,7 @@ public class TaskController {
                 throw new Exception("This employer cannot give a task to employee No: " + employee.getEmployeeNumber());
             }
         }
-        return service.createTask(task);
+        return service.createTask(task, employer);
     }
 
     @PreAuthorize("this.isAssignee(principal.username, #id)")
@@ -69,8 +69,10 @@ public class TaskController {
     }
 
     public boolean isOwner(Employer employer, Employee employee) {
-        if ((employer.getEmployees().contains(employee))) {
-            return true;
+        for (Employee empl : employer.getEmployees()) {
+            if (empl.getId() == employee.getId()) {
+                return true;
+            }
         }
         return false;
     }

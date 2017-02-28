@@ -51,16 +51,14 @@ public class Task implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "USER_ID")
-    @JsonBackReference
     private Employee lastUpdated;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "EMPLOYEE_TASKS", joinColumns = {
         @JoinColumn(name = "TASK_ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "EMPLOYEE_ID")}
     )
-    @JsonIgnore
     private List<Employee> assignees;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -6,6 +6,10 @@
 package com.example.task;
 
 import com.example.employee.Employee;
+import com.example.employee.EmployeeRepository;
+import com.example.employer.Employer;
+import com.example.user.User;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +22,26 @@ public class TaskService {
     @Autowired
     private TaskRepository repo;
 
-    public Task createTask(Task task) {
+    @Autowired
+    private EmployeeRepository employeeRepo;
+
+    public Task createTask(Task task, Employer emplr) {
+        task.setAssigner(emplr);
+
+        List<Employee> temps = new ArrayList<>();
+
+        for (Employee empl : task.getAssignees()) {
+            Long id = empl.getId();
+            Employee temp = employeeRepo.findById(id);
+            User user = temp.getUser();
+            temp.setFirstName(user.getFirstName());
+            temp.setLastName(user.getLastName());
+            temp.setPhoneNumber(user.getPhoneNumber());
+            temps.add(temp);
+        }
+
+        task.setAssignees(temps);
+
         return repo.save(task);
     }
 

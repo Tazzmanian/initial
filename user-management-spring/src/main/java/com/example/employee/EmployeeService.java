@@ -31,13 +31,14 @@ public class EmployeeService {
     private UserService userService;
 
     public Employee save(Employee empl) {
-        User user = empl.getUser();
-        userService.saveUser(user);
+        User user = new User();
 
         user.setBirthDate(empl.getDob());
         user.setFirstName(empl.getFirstName());
         user.setLastName(empl.getLastName());
         user.setPhoneNumber(empl.getPhoneNumber());
+
+        empl.setUser(user);
 
         return repo.save(empl);
     }
@@ -73,6 +74,8 @@ public class EmployeeService {
         dbEmpl.setSalary(empl.getSalary());
         dbEmpl.setBonus(empl.getBonus());
         dbEmpl.setCommission(empl.getCommission());
+        dbEmpl.setDob(empl.getDob());
+
         return repo.save(dbEmpl);
     }
 
