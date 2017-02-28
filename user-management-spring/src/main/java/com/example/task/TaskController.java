@@ -6,6 +6,7 @@
 package com.example.task;
 
 import com.example.employee.Employee;
+import com.example.employee.EmployeeDTO;
 import com.example.employee.EmployeeService;
 import com.example.employer.Employer;
 import com.example.employer.EmployerService;
@@ -62,6 +63,7 @@ public class TaskController {
     }
 
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
     public List<TaskUpdaterDTO> getTasks(Pageable pageRequest, @AuthenticationPrincipal User user) {
         Employer employer = employerService.getByUsername(user.getUsername());
         List<Employee> employees = employer.getEmployees();
@@ -70,8 +72,16 @@ public class TaskController {
 
     //- добавяш изтриване на task по id – само от employer и само негови таскове!
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
     public Task deleteTask(@PathVariable Long id, @AuthenticationPrincipal User user) {
         return service.delete(user.getUsername(), id);
+    }
+
+    //- добавяш показване само на assignees (input task id, employer id) 
+    @RequestMapping(value = "/tasks/{taskId}/{employerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<EmployeeDTO> showAssigneesOnTaskByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
+        return service.showAssigneesOnTaskByEmployer(taskId, employerId);
     }
 
     public boolean isOwner(Employer employer, Employee employee) {
