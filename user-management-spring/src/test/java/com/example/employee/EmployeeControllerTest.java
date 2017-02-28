@@ -223,7 +223,7 @@ public class EmployeeControllerTest extends AbstractTestRunner {
                 + "    \"sex\": \"m\"\n"
                 + "}";
 
-        resultSet = perform(MockMvcRequestBuilders.post("/employees").contentType(MediaType.APPLICATION_JSON)
+        resultSet = perform(MockMvcRequestBuilders.put("/employees").contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
