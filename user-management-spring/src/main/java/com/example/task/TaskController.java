@@ -12,18 +12,26 @@ import com.example.employer.Employer;
 import com.example.employer.EmployerService;
 import com.example.user.User;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.Link;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  *
@@ -31,19 +39,19 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class TaskController {
-
+    
     @Autowired
     private TaskService service;
-
+    
     @Autowired
     private EmployerService employerService;
-
+    
     @Autowired
     private EmployeeService employeeService;
-
+    
     @RequestMapping(value = "/tasks", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public Task createTask(@RequestBody Task task, @AuthenticationPrincipal User user) throws Exception {
+    public TaskResourceSupport createTask(@RequestBody Task task, @AuthenticationPrincipal User user) throws Exception {
         Employer employer = employerService.getByUsername(user.getUsername());
         List<Employee> employees = task.getAssignees();
         for (Employee employee : employees) {
@@ -51,9 +59,17 @@ public class TaskController {
                 throw new Exception("This employer cannot give a task to employee No: " + employee.getEmployeeNumber());
             }
         }
-        return service.createTask(task);
+        Task newTask = service.createTask(task);
+        
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        //Link selfLink = linkTo(TaskController.class).slash(request.getServletPath()).withSelfRel();
+        Link selfLink = linkTo(methodOn(TaskController.class).getTask(task.getId())).withSelfRel();
+        TaskResourceSupport taskLink = new TaskResourceSupport(newTask);
+        taskLink.add(selfLink);
+        
+        return taskLink;
     }
-
+    
     @PreAuthorize("this.isAssignee(principal.username, #id)")
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
@@ -61,7 +77,7 @@ public class TaskController {
         Employee employee = employeeService.getByUsername(user.getUsername());
         return service.logWork(id, update, employee);
     }
-
+    
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public List<TaskUpdaterDTO> getTasks(Pageable pageRequest, @AuthenticationPrincipal User user) {
@@ -91,13 +107,29 @@ public class TaskController {
         return service.showTasksUpdatesByEmployer(taskId, employerId);
     }
 
+    // test
+    @RequestMapping(value = "/tasks/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public TaskResourceSupport getTask(@PathVariable Long id) {
+        Task task = service.getTaskById(id);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Link selfLink = linkTo(TaskController.class).slash(request.getServletPath()).withSelfRel();
+        TaskResourceSupport taskLink = new TaskResourceSupport(task);
+        taskLink.add(selfLink);
+        
+        return taskLink;
+    }
+    
     public boolean isOwner(Employer employer, Employee employee) {
-        if ((employer.getEmployees().contains(employee))) {
-            return true;
+        for (Employee empl : employer.getEmployees()) {
+            if (empl.getId().equals(employee.getId())) {
+                return true;
+            }
         }
+        
         return false;
     }
-
+    
     public boolean isAssignee(String username, Long id) {
         Employee employee = employeeService.getByUsername(username);
         Task task = service.getById(id);
