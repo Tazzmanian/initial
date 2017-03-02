@@ -36,4 +36,25 @@ public class TaskUpdaterMapper {
         return new PageImpl<>(dtos, page, source.getTotalElements());
     }
 
+    // ResourceSource
+    public static TaskResourceSupportUpdaterDTO mapEntityIntoResourceSupportDTO(Task task) {
+
+        TaskUpdaterDTO dto = new TaskUpdaterDTO();
+        dto.setTitle(task.getTitle());
+        dto.setLastUpdated(task.getLastUpdated());
+        TaskResourceSupportUpdaterDTO resourceDTO = new TaskResourceSupportUpdaterDTO(dto);
+        resourceDTO.setTaskSelfLink(task.getId());
+        return resourceDTO;
+    }
+
+    public static List<TaskResourceSupportUpdaterDTO> mapEntitiesIntoResourceSupportDTOs(List<Task> tasks) {
+        return tasks.stream()
+                .map(TaskUpdaterMapper::mapEntityIntoResourceSupportDTO)
+                .collect(Collectors.toList());
+    }
+
+    public static Page<TaskResourceSupportUpdaterDTO> mapEntityPageIntoResourceSupportDTOPage(Pageable page, Page<Task> source) {
+        List<TaskResourceSupportUpdaterDTO> dtos = mapEntitiesIntoResourceSupportDTOs(source.getContent());
+        return new PageImpl<>(dtos, page, source.getTotalElements());
+    }
 }

@@ -36,4 +36,26 @@ public class TaskMapper {
         return new PageImpl<>(dtos, page, source.getTotalElements());
     }
 
+    //ResourceSupport
+    public static List<TaskResourceSupportDTO> mapEntitiesIntoResourceSupportDTOs(List<Task> tasks) {
+        return tasks.stream()
+                .map(TaskMapper::mapEntityIntoResourceSupportDTO)
+                .collect(Collectors.toList());
+    }
+
+    public static TaskResourceSupportDTO mapEntityIntoResourceSupportDTO(Task task) {
+        TaskDTO dto = new TaskDTO();
+        dto.setTitle(task.getTitle());
+        dto.setUpdates(task.getUpdates());
+        dto.setCreated(task.getCreated());
+        TaskResourceSupportDTO resourceDTO = new TaskResourceSupportDTO(dto);
+        resourceDTO.setTaskSelfLink(task.getId());
+        return resourceDTO;
+    }
+
+    public static Page<TaskResourceSupportDTO> mapEntityPageIntoResourceSupportDTOPage(Pageable page, Page<Task> source) {
+        List<TaskResourceSupportDTO> dtos = mapEntitiesIntoResourceSupportDTOs(source.getContent());
+        return new PageImpl<>(dtos, page, source.getTotalElements());
+    }
+
 }

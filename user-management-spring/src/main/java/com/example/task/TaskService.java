@@ -17,6 +17,8 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,81 +27,116 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TaskService {
-    
+
     @Autowired
     private TaskRepository repo;
-    
+
     @Autowired
     private EmployerRepository employerRepo;
-    
+
     @Autowired
     private EmployeeRepository employeeRepo;
-    
+
     @Autowired
     private UpdateRepository updateRepo;
-    
+
     public Task createTask(Task task) {
         List<Employee> employees = new ArrayList<>();
-        
+
         for (Employee empl : task.getAssignees()) {
             employees.add(employeeRepo.getOne(empl.getId()));
         }
-        
+
         task.setAssignees(employees);
-        
+
         return repo.save(task);
     }
-    
+
+    public TaskResourceSupport createTaskResourceSupport(Task task) {
+        Task newTask = createTask(task);
+        TaskResourceSupport taskLink = new TaskResourceSupport(newTask);
+        return taskLink.setTaskSelfLink(task.getId());
+    }
+
     public Task getById(Long id) {
         return repo.findOne(id);
     }
-    
+
     public Page<TaskUpdaterDTO> getAllTasks(Pageable pageRequest) {
         Page<Task> tasks = repo.findAll(pageRequest);
         return TaskUpdaterMapper.mapEntityPageIntoDTOPage(pageRequest, tasks);
     }
-    
+
     public Page<TaskUpdaterDTO> getEmployeesTasks(List<Employee> employees, Pageable pageRequest) {
         Page<Task> tasks = repo.findByAssigneesIn(employees, pageRequest);
         return TaskUpdaterMapper.mapEntityPageIntoDTOPage(pageRequest, tasks);
     }
-    
+
+    public Page<TaskResourceSupportUpdaterDTO> getEmployeesResourceSupportTasks(List<Employee> employees, Pageable pageRequest) {
+        Page<Task> tasks = repo.findByAssigneesIn(employees, pageRequest);
+        return TaskUpdaterMapper.mapEntityPageIntoResourceSupportDTOPage(pageRequest, tasks);
+    }
+
     public Page<TaskDTO> getByEmployeeId(Long id, Pageable pageRequest) {
         Page<Task> tasks = repo.findByAssigneesId(id, pageRequest);
         return TaskMapper.mapEntityPageIntoDTOPage(pageRequest, tasks);
     }
-    
-    public TaskDTO logWork(Long id, Update update, Employee employee) throws Exception {
+
+    private Task logWorkHelper(Long id, Update update, Employee employee) throws Exception {
         Task dbTask = repo.findOne(id);
         if (dbTask == null) {
             throw new Exception("Task not found");
         }
+
         update.setUpdater(employee);
         update.setTask(dbTask);
         dbTask.getUpdates().add(update);
         dbTask.setLastUpdated(employee);
+
+        return dbTask;
+    }
+
+    public TaskDTO logWork(Long id, Update update, Employee employee) throws Exception {
+        Task dbTask;
+        try {
+            dbTask = logWorkHelper(id, update, employee);
+        } catch (Exception ex) {
+            throw ex;
+        }
+
         return TaskMapper.mapEntityIntoDTO(repo.save(dbTask));
     }
-    
+
+    public TaskResourceSupportDTO logWorkResourceSupport(Long id, Update update, Employee employee) throws Exception {
+        Task dbTask;
+        try {
+            dbTask = logWorkHelper(id, update, employee);
+        } catch (Exception ex) {
+            throw ex;
+        }
+
+        return TaskMapper.mapEntityIntoResourceSupportDTO(repo.save(dbTask));
+    }
+
     public Task delete(String username, Long id) {
-        
+
         Task task = repo.findByAssignerUserUserNameAndId(username, id);
-        
+
         if (task == null) {
             return task;
         }
-        
+
         Task temp = task;
         temp.setAssigner(null);
         temp.setAssignees(null);
-        
+
         temp = repo.save(temp);
-        
+
         repo.delete(temp);
-        
+
         return task;
     }
-    
+
     private List<Employee> showAssigneesOnTaskByEmployerHelper(Long taskId, Long employerId) {
         Employer employer = employerRepo.findOne(employerId);
 
@@ -110,27 +147,27 @@ public class TaskService {
         for (int i = 0; i < employer.getEmployees().size(); ++i) {
             fillEmployee(employer.getEmployees().get(i));
         }
-        
+
         List<Employee> employeeList = new ArrayList<>();
         employer = employerRepo.findOne(employerId);
         List<Employee> currentEmployeeList = employer.getEmployees();
-        
+
         currentEmployeeList.stream().forEach((Employee employee) -> {
             employee.getTasks().stream().filter((task) -> (Objects.equals(task.getId(), taskId))).forEach((_item) -> {
                 employeeList.add(employee);
             });
         });
-        
+
         return employeeList;
     }
-    
+
     public List<EmployeeDTO> showAssigneesOnTaskByEmployer(Long taskId, Long employerId) {
         return EmployeeMapper.mapEntitiesIntoDTOs(showAssigneesOnTaskByEmployerHelper(taskId, employerId));
     }
-    
+
     private void fillEmployee(Employee empl) {
         User user = empl.getUser();
-        
+
         if (empl.getDob() == null) {
             empl.setDob(user.getBirthDate());
         }
@@ -143,27 +180,27 @@ public class TaskService {
         if (empl.getPhoneNumber() == null) {
             empl.setPhoneNumber(user.getPhoneNumber());
         }
-        
+
         employeeRepo.save(empl);
     }
-    
+
     public List<Update> showTasksUpdatesByEmployer(Long taskId, Long employerId) {
-        
+
         List<Employee> employees = showAssigneesOnTaskByEmployerHelper(taskId, employerId);
-        
+
         List<List<Update>> list = employees.stream().map(Employee::getUpdates).collect(Collectors.toList());
-        
+
         List<Update> flattenList = list.stream().flatMap(List::stream).collect(Collectors.toList());
-        
+
         List<Update> filteredList = flattenList.stream().filter(x -> taskId.equals(x.getTask().getId())).collect(Collectors.toList());
-        
+
         return filteredList;
     }
-    
+
     public Task getTaskById(Long id) {
         return repo.findOne(id);
     }
-    
+
     List<Task> getTasks() {
         return repo.findAll();
     }

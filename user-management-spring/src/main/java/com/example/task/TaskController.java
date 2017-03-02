@@ -39,16 +39,16 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 @RestController
 public class TaskController {
-    
+
     @Autowired
     private TaskService service;
-    
+
     @Autowired
     private EmployerService employerService;
-    
+
     @Autowired
     private EmployeeService employeeService;
-    
+
     @RequestMapping(value = "/tasks", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public TaskResourceSupport createTask(@RequestBody Task task, @AuthenticationPrincipal User user) throws Exception {
@@ -59,31 +59,23 @@ public class TaskController {
                 throw new Exception("This employer cannot give a task to employee No: " + employee.getEmployeeNumber());
             }
         }
-        Task newTask = service.createTask(task);
-        
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        //Link selfLink = linkTo(TaskController.class).slash(request.getServletPath()).withSelfRel();
-        Link selfLink = linkTo(methodOn(TaskController.class).getTask(task.getId())).withSelfRel();
-        TaskResourceSupport taskLink = new TaskResourceSupport(newTask);
-        taskLink.add(selfLink);
-        
-        return taskLink;
+        return service.createTaskResourceSupport(task);
     }
-    
+
     @PreAuthorize("this.isAssignee(principal.username, #id)")
     @RequestMapping(value = "/tasks/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public TaskDTO addUpdate(@PathVariable Long id, @RequestBody Update update, @AuthenticationPrincipal User user) throws Exception {
+    public TaskResourceSupportDTO addUpdate(@PathVariable Long id, @RequestBody Update update, @AuthenticationPrincipal User user) throws Exception {
         Employee employee = employeeService.getByUsername(user.getUsername());
-        return service.logWork(id, update, employee);
+        return service.logWorkResourceSupport(id, update, employee);
     }
-    
+
     @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public List<TaskUpdaterDTO> getTasks(Pageable pageRequest, @AuthenticationPrincipal User user) {
+    public List<TaskResourceSupportUpdaterDTO> getTasks(Pageable pageRequest, @AuthenticationPrincipal User user) {
         Employer employer = employerService.getByUsername(user.getUsername());
         List<Employee> employees = employer.getEmployees();
-        return service.getEmployeesTasks(employees, pageRequest).getContent();
+        return service.getEmployeesResourceSupportTasks(employees, pageRequest).getContent();
     }
 
     //- добавяш изтриване на task по id – само от employer и само негови таскове!
@@ -116,20 +108,20 @@ public class TaskController {
         Link selfLink = linkTo(TaskController.class).slash(request.getServletPath()).withSelfRel();
         TaskResourceSupport taskLink = new TaskResourceSupport(task);
         taskLink.add(selfLink);
-        
+
         return taskLink;
     }
-    
+
     public boolean isOwner(Employer employer, Employee employee) {
         for (Employee empl : employer.getEmployees()) {
             if (empl.getId().equals(employee.getId())) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public boolean isAssignee(String username, Long id) {
         Employee employee = employeeService.getByUsername(username);
         Task task = service.getById(id);

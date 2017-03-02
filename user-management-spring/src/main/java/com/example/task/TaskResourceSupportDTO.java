@@ -5,7 +5,6 @@
  */
 package com.example.task;
 
-import javax.mail.Quota;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -15,21 +14,21 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  *
  * @author Teodor Todorov
  */
-public class TaskResourceSupport extends ResourceSupport {
+public class TaskResourceSupportDTO extends ResourceSupport {
 
-    private final Task task;
+    private final TaskDTO task;
 
-    public TaskResourceSupport(Task task) {
+    public TaskResourceSupportDTO(TaskDTO task) {
         this.task = task;
     }
 
-    public TaskResourceSupport setTaskSelfLink(Long taskId) {
+    public TaskResourceSupportDTO setTaskSelfLink(Long taskId) {
         Link selfLink = linkTo(methodOn(TaskController.class).getTask(taskId)).withSelfRel();
         this.add(selfLink);
         return this;
     }
 
-    public Task getTask() {
+    public TaskDTO getTask() {
         return task;
     }
 }
