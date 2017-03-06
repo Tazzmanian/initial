@@ -23,4 +23,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     public Page<Task> findByAssigneesIn(List<Employee> employees, Pageable pageRequest);
 
+    public List<Task> findByAssignerUserUserName(String username);
+
+    public Task findByAssignerUserUserNameAndId(String username, Long id);
 }

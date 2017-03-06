@@ -30,6 +30,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
+import org.springframework.hateoas.ResourceSupport;
 
 @Entity(name = "TASK")
 @Data
@@ -60,15 +61,11 @@ public class Task implements Serializable {
             inverseJoinColumns = {
                 @JoinColumn(name = "EMPLOYEE_ID")}
     )
-    @JsonIgnore
+    //@JsonIgnore
     private List<Employee> assignees;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "EMPLOYER_TASKS", joinColumns = {
-        @JoinColumn(name = "TASK_ID")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "EMPLOYER_ID")}
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ASSIGNER_ID")
     private Employer assigner;
 
     @PrePersist
