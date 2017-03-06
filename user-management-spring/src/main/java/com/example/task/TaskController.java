@@ -88,15 +88,21 @@ public class TaskController {
     //- добавяш показване само на assignees (input task id, employer id) 
     @RequestMapping(value = "/tasks/assignees/{taskId}/{employerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public List<EmployeeDTO> showAssigneesOnTaskByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
-        return service.showAssigneesOnTaskByEmployer(taskId, employerId);
+    public EmployeesResourceSupportDTO showAssigneesOnTaskByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
+        EmployeesResourceSupportDTO listLink = new EmployeesResourceSupportDTO(service.showAssigneesOnTaskByEmployer(taskId, employerId));
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        listLink.setSelfLink(request.getServletPath());
+        return listLink;
     }
 
     // - добавяш показване само на updates (input task id, employer id)
     @RequestMapping(value = "/tasks/updates/{taskId}/{employerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
-    public List<Update> showTasksUpdatesByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
-        return service.showTasksUpdatesByEmployer(taskId, employerId);
+    public UpdatesResourceSupportDTO showTasksUpdatesByEmployer(@PathVariable Long taskId, @PathVariable Long employerId) {
+        UpdatesResourceSupportDTO updateLink = new UpdatesResourceSupportDTO(service.showTasksUpdatesByEmployer(taskId, employerId));
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        updateLink.setSelfLink(request.getServletPath());
+        return updateLink;
     }
 
     // test

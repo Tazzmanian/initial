@@ -7,31 +7,30 @@ package com.example.task;
 
 import com.example.employee.EmployeeDTO;
 import java.util.List;
-import javax.mail.Quota;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  *
  * @author Teodor Todorov
  */
-public class TaskResourceSupport extends ResourceSupport {
+public class EmployeesResourceSupportDTO extends ResourceSupport {
 
-    private final Task task;
+    private final List<EmployeeDTO> assignees;
 
-    public TaskResourceSupport(Task task) {
-        this.task = task;
+    public EmployeesResourceSupportDTO(List<EmployeeDTO> assignees) {
+        this.assignees = assignees;
     }
 
-    public TaskResourceSupport setTaskSelfLink(Long taskId) {
-        Link selfLink = linkTo(methodOn(TaskController.class).getTask(taskId)).withSelfRel();
+    public EmployeesResourceSupportDTO setSelfLink(String servletPath) {
+        Link selfLink = linkTo(TaskController.class).slash(servletPath).withSelfRel();
         this.add(selfLink);
         return this;
     }
 
-    public Task getTask() {
-        return task;
+    public List<EmployeeDTO> getAssignees() {
+        return assignees;
     }
+
 }
